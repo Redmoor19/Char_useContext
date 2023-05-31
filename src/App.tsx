@@ -4,12 +4,15 @@ import { Home } from './pages/Home';
 import { Store} from './pages/Store';
 import { About } from './pages/About';
 import { Navbar } from './components/Navbar';
-import { ShoppingCartProvider } from './context/ShoppingCardContext';
+// import { ShoppingCartProvider } from './context/ShoppingCardContext';
+
+import { Provider } from 'react-redux';
+import { store } from './store/store';
 
 function App() {
 
   return (
-    <ShoppingCartProvider>
+    <Provider store={store}>
       <Navbar />
       <Container className='mb-4'>
         <Routes>
@@ -18,7 +21,7 @@ function App() {
           <Route path="/about" element={<About />}/>
         </Routes>
       </Container>
-    </ShoppingCartProvider>
+    </Provider>
   )
 }
 

@@ -1,6 +1,8 @@
 import { Button, Card } from "react-bootstrap"
 import { formatCurrency } from "../util/formatCurrency"
-import { useShoppingCart } from "../context/ShoppingCardContext";
+import { useSelector, useDispatch } from 'react-redux'
+import { increaseQuantity, decreaseQuantity, removeFromCart } from "../slices/cartSlice"
+import type { RootState } from "../store/store"
 
 type StoreItemProps = {
     id: number,
@@ -10,8 +12,8 @@ type StoreItemProps = {
 }
 
 export function StoreItem({id, name, price, imgUrl} : StoreItemProps) {
-    const {getItemQuantity, increaseQuantity, decreaseQuantity, removeFromCart} = useShoppingCart();
-    const quantity = getItemQuantity(id);
+    const quantity = useSelector( (state: RootState) => state.cart.cartItems.find( item => item.id === id)?.quantity);
+    const dispatch = useDispatch();
 
     return(
         <Card className="h-100">
@@ -27,17 +29,17 @@ export function StoreItem({id, name, price, imgUrl} : StoreItemProps) {
                     <span className="ms-2 text-muted">{formatCurrency(price)}</span>
                 </Card.Title>
                 <div className="mt-auto">
-                    {quantity === 0 ? (
-                        <Button onClick={() => increaseQuantity(id)} className="w-100"> + Add to cart</Button>
+                    {quantity === undefined ? (
+                        <Button onClick={() => dispatch(increaseQuantity(id))} className="w-100"> + Add to cart</Button>
                     ): <div className="d-flex align-items-center flex-column" style={{gap: ".5rem"}}>
                             <div className="d-flex align-items-center justify-content-center" style={{gap: ".5rem"}}>
-                                <Button onClick={() => decreaseQuantity(id)}>-</Button>
+                                <Button onClick={() => dispatch(decreaseQuantity(id))}>-</Button>
                                 <div>
                                     <span className="fs-3">{quantity}</span> in cart
                                 </div>
-                                <Button onClick={() => increaseQuantity(id)}>+</Button>
+                                <Button onClick={() => dispatch(increaseQuantity(id))}>+</Button>
                             </div>
-                            <Button variant="danger" size="sm" onClick={() => removeFromCart(id)}>Remove</Button>
+                            <Button variant="danger" size="sm" onClick={() => dispatch(removeFromCart(id))}>Remove</Button>
                         </div>}
                 </div>
             </Card.Body>

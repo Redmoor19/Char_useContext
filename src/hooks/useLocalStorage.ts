@@ -1,20 +1,22 @@
-import { useEffect, useState } from "react";
+import type { CartItem } from "../slices/cartSlice";
 
-export function useLocalStorage<T>(key: string, initialValue: T | (() => (T))) {
-    const [value, setValue] = useState<T>(() => {
-        const jsonValue = localStorage.getItem(key)
-        if (jsonValue != null) return JSON.parse(jsonValue)
+const KEY = "cart";
 
-        if (typeof initialValue === "function") {
-            return (initialValue as ()=>(T))()
-        } else {
-            return initialValue;
-        }
-    })
+export function loadState() {
+    try {
+        const stateFromStorge = localStorage.getItem(KEY);
+        if (!stateFromStorge) return undefined;
+        return JSON.parse(stateFromStorge);
+    } catch (e) {
+        return undefined
+    }
+}
 
-    useEffect( () => {
-        localStorage.setItem(key, JSON.stringify(value))
-    }, [key, value])
-
-    return [value, setValue] as [typeof value, typeof setValue]
+export async function saveState(state: {cartItems: CartItem[], isOpen: boolean}) {
+    try {
+        const stateToStorage = JSON.stringify(state);
+        localStorage.setItem(KEY, stateToStorage)
+    } catch (e) {
+        return undefined
+    }
 }
